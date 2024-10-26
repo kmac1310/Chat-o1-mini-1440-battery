@@ -73,7 +73,7 @@
         .battery-level {
             height: 100%;
             background-color: #0f0; /* Green by default */
-            width: 0;
+            width: 100%; /* Start full */
             border-radius: 6px 0 0 6px;
             transition: width 1s ease-in-out, background-color 0.5s ease-in-out;
         }
@@ -155,12 +155,12 @@
         <div id="token-display" aria-label="Tokens Remaining"></div>
         
         <!-- Battery Structure with ARIA Attributes for Accessibility -->
-        <div class="battery-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-tooltip="">
+        <div class="battery-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-tooltip="100% of the day remaining">
             <div class="battery-level" id="progress" aria-hidden="true"></div>
             <div class="battery-cap"></div>
         </div>
         
-        <div id="percentage-display" aria-label="Percentage Remaining"></div>
+        <div id="percentage-display" aria-label="Percentage Remaining">100%</div>
     </div>
 
     <script>
@@ -192,7 +192,7 @@
             
             // Update Battery Level Width
             const progressBar = document.getElementById('progress');
-            const progressPercentage = (1 - percentageRemaining) * 100;
+            const progressPercentage = percentageRemaining * 100; // Corrected Calculation
             progressBar.style.width = `${progressPercentage}%`;
             
             // Update Percentage Display
@@ -210,8 +210,9 @@
             
             // Update ARIA Attributes for Accessibility
             const batteryContainer = document.querySelector('.battery-container');
-            batteryContainer.setAttribute('aria-valuenow', Math.round(percentageRemaining * 100));
-            batteryContainer.setAttribute('data-tooltip', `${Math.round(percentageRemaining * 100)}% of the day remaining`);
+            const roundedPercentage = Math.round(percentageRemaining * 100);
+            batteryContainer.setAttribute('aria-valuenow', roundedPercentage);
+            batteryContainer.setAttribute('data-tooltip', `${roundedPercentage}% of the day remaining`);
         }
 
         // Initial call to display correct data immediately
