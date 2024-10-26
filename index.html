@@ -12,140 +12,108 @@
             height: 100%;
             font-family: Arial, sans-serif;
             background-color: #121212; /* Dark background for better contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Main container styling */
         #daily-time-tracker {
-            width: 100%;
-            height: 100%;
-            background-color: #121212; /* Consistent dark theme */
-            color: #ffffff; /* White text for readability */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 300px;
+            height: 400px;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         /* Time display styling */
         #time-display {
-            font-size: 8vw;
-            align-self: center;
+            text-align: right;
+            font-size: 20px;
             margin-bottom: 20px;
         }
 
         /* Token display styling */
         #token-display {
-            font-size: 20vw;
-            margin: 10vh 0;
+            font-size: 60px;
             text-align: center;
+            margin-top: 100px;
         }
 
         /* Battery container styling */
-        .battery-container {
+        #progress-bar {
+            width: 200px;
+            height: 30px;
+            background-color: #555; /* Gray background for the battery */
+            margin: 20px auto;
+            border-radius: 5px;
+            overflow: hidden; /* Ensure the progress doesn't overflow */
             position: relative;
-            width: 80%;
-            max-width: 600px;
-            height: 50px;
-            background-color: #444;
-            border: 2px solid #333;
-            border-radius: 8px;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Battery cap styling */
-        .battery-cap {
-            position: absolute;
-            top: 50%;
-            right: -25px;
-            width: 25px;
-            height: 15px;
-            background-color: #444;
-            border: 2px solid #333;
-            border-radius: 3px;
-            transform: translateY(-50%);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
         }
 
         /* Battery level styling */
-        .battery-level {
+        #progress {
             height: 100%;
             background-color: #0f0; /* Green by default */
-            width: 100%; /* Start full */
-            border-radius: 6px 0 0 6px;
+            width: 0;
             transition: width 1s ease-in-out, background-color 0.5s ease-in-out;
         }
 
         /* Percentage display styling */
         #percentage-display {
-            color: #ffcc00; /* Gold color for visibility */
-            font-size: 6vw;
-            margin-top: 20px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            #time-display {
-                font-size: 10vw;
-            }
-            #token-display {
-                font-size: 24vw;
-            }
-            .battery-container {
-                height: 40px;
-            }
-            .battery-cap {
-                width: 20px;
-                height: 12px;
-                right: -20px;
-            }
-            #percentage-display {
-                font-size: 5vw;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #time-display {
-                font-size: 12vw;
-            }
-            #token-display {
-                font-size: 28vw;
-            }
-            .battery-container {
-                height: 35px;
-            }
-            .battery-cap {
-                width: 18px;
-                height: 10px;
-                right: -18px;
-            }
-            #percentage-display {
-                font-size: 4vw;
-            }
+            text-align: center;
+            color: #ff0; /* Yellow color for visibility */
+            font-size: 14px;
+            margin-top: 10px;
         }
 
         /* Tooltip Styling */
-        .battery-container:hover::after {
+        #progress-bar:hover::after {
             content: attr(data-tooltip);
             position: absolute;
-            top: -40px;
+            top: -35px;
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 8px 12px;
+            padding: 5px 10px;
             border-radius: 4px;
             white-space: nowrap;
-            font-size: 1em;
+            font-size: 12px;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
         }
 
-        .battery-container:hover::after {
+        #progress-bar:hover::after {
             opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            #daily-time-tracker {
+                width: 90%;
+                height: auto;
+            }
+
+            #token-display {
+                font-size: 40px;
+                margin-top: 50px;
+            }
+
+            #progress-bar {
+                width: 90%;
+                height: 25px;
+            }
+
+            #percentage-display {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -153,27 +121,26 @@
     <div id="daily-time-tracker">
         <div id="time-display" aria-label="Current Time"></div>
         <div id="token-display" aria-label="Tokens Remaining"></div>
-        
-        <!-- Battery Structure with ARIA Attributes for Accessibility -->
-        <div class="battery-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-tooltip="100% of the day remaining">
-            <div class="battery-level" id="progress" aria-hidden="true"></div>
-            <div class="battery-cap"></div>
+        <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-tooltip="100% of the day remaining">
+            <div id="progress" aria-hidden="true"></div>
         </div>
-        
         <div id="percentage-display" aria-label="Percentage Remaining">100%</div>
     </div>
 
     <script>
         function updateDisplay() {
             const now = new Date();
-            const midnight = new Date(now).setHours(0,0,0,0);
-            const secondsPassed = (now - midnight) / 1000;
+            // Calculate midnight today
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
+            const nowTime = now.getTime();
+            const secondsPassed = (nowTime - midnight) / 1000;
             const secondsInDay = 24 * 60 * 60;
-            
+
+            // Calculate percentage remaining
             const percentageRemaining = (secondsInDay - secondsPassed) / secondsInDay;
-            const tokensRemaining = Math.floor(1440 * percentageRemaining);
-            
-            // Format time to 12-hour clock
+            const tokensRemaining = Math.floor(1440 * percentageRemaining); // Total minutes in a day
+
+            // Format time to HH:MM AM/PM
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let ampm = hours >= 12 ? 'PM' : 'AM';
@@ -181,38 +148,37 @@
             hours = hours ? hours : 12; // the hour '0' should be '12'
             minutes = minutes < 10 ? '0' + minutes : minutes;
             let strTime = hours + ':' + minutes + ' ' + ampm;
-            
+
             // Update Time Display
             const timeDisplay = document.getElementById('time-display');
             timeDisplay.textContent = strTime;
-            
+
             // Update Token Display
             const tokenDisplay = document.getElementById('token-display');
             tokenDisplay.textContent = tokensRemaining;
-            
+
             // Update Battery Level Width
-            const progressBar = document.getElementById('progress');
-            const progressPercentage = percentageRemaining * 100; // Corrected Calculation
-            progressBar.style.width = `${progressPercentage}%`;
-            
+            const progressBar = document.getElementById('progress-bar');
+            const progress = document.getElementById('progress');
+            const progressPercentage = (1 - percentageRemaining) * 100; // Fill as time passes
+            progress.style.width = `${progressPercentage}%`;
+
             // Update Percentage Display
             const percentageDisplay = document.getElementById('percentage-display');
             percentageDisplay.textContent = `${Math.round(percentageRemaining * 100)}%`;
-            
+
             // Change Battery Color Based on Percentage
             if (percentageRemaining > 0.5) {
-                progressBar.style.backgroundColor = '#0f0'; // Green
+                progress.style.backgroundColor = '#0f0'; // Green
             } else if (percentageRemaining > 0.2) {
-                progressBar.style.backgroundColor = '#ff0'; // Yellow
+                progress.style.backgroundColor = '#ff0'; // Yellow
             } else {
-                progressBar.style.backgroundColor = '#f00'; // Red
+                progress.style.backgroundColor = '#f00'; // Red
             }
-            
+
             // Update ARIA Attributes for Accessibility
-            const batteryContainer = document.querySelector('.battery-container');
-            const roundedPercentage = Math.round(percentageRemaining * 100);
-            batteryContainer.setAttribute('aria-valuenow', roundedPercentage);
-            batteryContainer.setAttribute('data-tooltip', `${roundedPercentage}% of the day remaining`);
+            progressBar.setAttribute('aria-valuenow', Math.round(percentageRemaining * 100));
+            progressBar.setAttribute('data-tooltip', `${Math.round(percentageRemaining * 100)}% of the day remaining`);
         }
 
         // Initial call to display correct data immediately
